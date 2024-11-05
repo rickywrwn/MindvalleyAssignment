@@ -29,30 +29,16 @@ class AppCoordinator: Coordinator {
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
-        setupNavigationBar()
-    }
-    
-    private func setupNavigationBar() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .black
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        
-        navigationController.navigationBar.standardAppearance = appearance
-        navigationController.navigationBar.scrollEdgeAppearance = appearance
-        navigationController.navigationBar.compactAppearance = appearance
-        
-        navigationController.navigationBar.tintColor = .white
     }
     
     func start() {
-        showHome()
+        showChannel()
     }
     
-    private func showHome() {
-        let homeCoordinator = HomeCoordinator(navigationController: navigationController)
-        homeCoordinator.parentCoordinator = self
-        childCoordinators.append(homeCoordinator)
-        homeCoordinator.start()
+    private func showChannel() {
+        let channelCoordinator = ChannelCoordinator(navigationController: navigationController)
+        channelCoordinator.parentCoordinator = self
+        childCoordinators.append(channelCoordinator)
+        channelCoordinator.start()
     }
 }

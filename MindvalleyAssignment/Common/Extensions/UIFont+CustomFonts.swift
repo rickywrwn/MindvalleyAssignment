@@ -18,4 +18,5 @@ extension UIFont{
     static func roboto(type: RobotoType, size: CGFloat) -> UIFont?{
         return UIFont(name: "Roboto\(type.rawValue)", size: size)
     }
+    
 }

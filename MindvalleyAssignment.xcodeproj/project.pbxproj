@@ -33,7 +33,7 @@
 		9CB6D8232CD99E0C00E2DCB5 /* Exceptions for "MindvalleyAssignment" folder in "MindvalleyAssignment" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Application/Info.plist,
 			);
 			target = 9CB6D7FA2CD99E0B00E2DCB5 /* MindvalleyAssignment */;
 		};

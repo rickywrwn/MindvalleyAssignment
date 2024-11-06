@@ -26,7 +26,7 @@ class ChannelViewController: UIViewController {
     
     private func setupCollectionView(){
         view.addSubview(collectionView)
-        collectionView.frame = view.bounds
+        collectionView.backgroundColor = .channelBackgroundColor
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),

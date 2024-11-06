@@ -21,7 +21,7 @@ class ChannelViewController: UIViewController {
     private func setupNavigationTitle(){
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "Channels"
-        self.navigationItem.largeTitleDisplayMode = .automatic
+        self.navigationItem.largeTitleDisplayMode = .always
     }
     
     private func setupCollectionView(){
@@ -43,7 +43,7 @@ class ChannelViewController: UIViewController {
         collectionView.dataSource = self
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
@@ -75,7 +75,7 @@ class ChannelViewController: UIViewController {
         // Section
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 0, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 20, bottom: 10, trailing: 0)
         section.interGroupSpacing = 20
 
         

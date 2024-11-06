@@ -15,6 +15,7 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
         return imageView
     }()
     
@@ -38,16 +39,6 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 20
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
-    }()
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -62,17 +53,24 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
 //        contentView.layer.borderColor = UIColor.red.cgColor
 //        contentView.layer.borderWidth = 1
         
-        contentView.addSubview(stackView)
-        stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(subtitleLabel)
+        contentView.addSubview(imageView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(subtitleLabel)
+        
         NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.heightAnchor.constraint(equalToConstant: 228),
             
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: 4),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            subtitleLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: 4),
+            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
     

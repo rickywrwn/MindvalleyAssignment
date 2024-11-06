@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SectionFooterLineView: UICollectionReusableView {
+class ChannelSectionFooterLineView: UICollectionReusableView {
     static let identifier = "SectionFooterLineView"
     
     private let lineView: UIView = {

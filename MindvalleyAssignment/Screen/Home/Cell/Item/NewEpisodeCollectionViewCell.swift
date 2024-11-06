@@ -10,7 +10,7 @@ import UIKit
 class NewEpisodeCollectionViewCell: UICollectionViewCell {
     static let identifier = "NewEpisodeCollectionViewCell"
     
-    private let imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -19,7 +19,7 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .primaryTextColor
         label.font = .roboto(type: .bold, size: 17)
@@ -29,7 +29,7 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let subtitleLabel: UILabel = {
+    private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .secondaryTextColor
         label.font = .roboto(type: .bold, size: 13)
@@ -49,9 +49,14 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
     }
     
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = nil
+        titleLabel.text = nil
+        subtitleLabel.text = nil
+    }
+    
     private func setupUI() {
-//        contentView.layer.borderColor = UIColor.red.cgColor
-//        contentView.layer.borderWidth = 1
         
         contentView.addSubview(imageView)
         contentView.addSubview(titleLabel)
@@ -78,40 +83,5 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
         titleLabel.text = title
         subtitleLabel.text = subtitle.uppercased()
         imageView.image = UIImage(named: "test_course")
-    }
-}
-
-class NewEpisodeSectionHeaderView: UICollectionReusableView {
-    static let identifier = "NewEpisodeSectionHeaderView"
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .secondaryTextColor
-        label.font = .roboto(type: .bold, size: 20)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func setupUI() {
-        addSubview(titleLabel)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
-    }
-    
-    func configure(with title: String) {
-        titleLabel.text = title
     }
 }

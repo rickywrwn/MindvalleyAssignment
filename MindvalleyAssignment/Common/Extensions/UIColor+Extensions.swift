@@ -28,6 +28,10 @@ extension UIColor {
     static var channelLineDividerColor: UIColor {
         return UIColor(hex: "#3C434E")
     }
+    
+    static var categoryBackgroundColor: UIColor {
+        return UIColor(hex: "#3a3e46")
+    }
 }
 
 

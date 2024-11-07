@@ -9,13 +9,103 @@ import UIKit
 
 class ChannelViewController: UIViewController {
     weak var coordinator: ChannelCoordinator?
+    private let viewModel: ChannelViewModelProtocol
+    
+//    private func setupData() {
+//        let newEpisodes: [ChannelItem] = [
+//            .newEpisode(NewEpisode(title: "The Cure For Loneliness", subtitle: "Mindvalley Mentoring", image: nil)),
+//            .newEpisode(NewEpisode(title: "Evolved Enterprise", subtitle: "Impact At Work", image: nil))
+//        ]
+//        
+//        let courses: [ChannelItem] = [
+//            .course(Course(title: "The Art Of Conscious Parenting", image: nil)),
+//            .course(Course(title: "Personal Growth", image: nil))
+//        ]
+//        
+//        let series: [ChannelItem] = [
+//            .series(Series(title: "A-Fest Sardinia 2018", image: nil)),
+//            .series(Series(title: "Business Mastery", image: nil))
+//        ]
+//        
+//        let categories: [ChannelItem] = [
+//            .category(Category(title: "Love Relationship")),
+//            .category(Category(title: "Emotional"))
+//        ]
+//        
+//        sections = [
+//            ChannelSection(type: .newEpisodes, items: newEpisodes),
+//            ChannelSection(type: .courses, items: courses),
+//            ChannelSection(type: .series, items: series),
+//            ChannelSection(type: .categories, items: categories)
+//        ]
+//    }
+    
+    
+    init(viewModel: ChannelViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = .channelBackgroundColor
+//        setupData()
         setupNavigationTitle()
         setupCollectionView()
+        setupBindings()
+        
+        // Fetch initial data
+        Task {
+            await viewModel.fetchNewEpisode()
+        }
+    }
+    
+    // MARK: - Private Methods
+    private func setupBindings() {
+        viewModel.onStateChanged = { [weak self] state in
+            self?.handleStateChange(state)
+        }
+        
+        viewModel.onEpisodeDataChanged = {
+            
+        }
+        
+        viewModel.onSectionDataChanged = { [weak self] in
+            
+            DispatchQueue.main.async {
+                print("masuk ")
+                self?.collectionView.reloadData()
+            }
+        }
+    }
+    
+    private func handleStateChange(_ state: ViewState) {
+        switch state {
+        case .loading:
+//            activityIndicator.startAnimating()
+//            updateButton.isEnabled = false
+            print(state)
+            
+        case .loaded:
+//            activityIndicator.startAnimating()
+//            updateButton.isEnabled = false
+            print(state)
+            
+        case .error(let error):
+//            activityIndicator.startAnimating()
+//            updateButton.isEnabled = false
+            print(state)
+            
+        case .idle:
+//            activityIndicator.startAnimating()
+//            updateButton.isEnabled = false
+            print(state)
+        }
     }
     
     private func setupNavigationTitle(){
@@ -38,11 +128,21 @@ class ChannelViewController: UIViewController {
     }
     
     private func createCollectionViewLayout() -> UICollectionViewLayout {
-//        let section = createNewEpisodeSection()
-//        let section = createCourseSection()
-//        let section = createSeriesSection()
-        let section = createCategorySection()
-        return UICollectionViewCompositionalLayout(section: section)
+        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
+            
+            let sectionType = SectionType(rawValue: sectionIndex) ?? .newEpisodes
+            switch sectionType {
+            case .newEpisodes:
+                return self?.createNewEpisodeSection()
+            case .courses:
+                return self?.createCourseSection()
+            case .series:
+                return self?.createSeriesSection()
+            case .categories:
+                return self?.createCategorySection()
+            }
+        }
+        return layout
     }
     
     private func createNewEpisodeSection() -> NSCollectionLayoutSection {
@@ -274,110 +374,114 @@ class ChannelViewController: UIViewController {
 extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 5
+        return viewModel.sectionData?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+        return viewModel.sectionData?[section].items.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-//        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewEpisodeCollectionViewCell.identifier, for: indexPath) as? NewEpisodeCollectionViewCell else {
-//            return UICollectionViewCell()
-//        }
-//        if indexPath.row == 1{
-//
-//            cell.configure(title: "Evolved Enterprise", subtitle: "Impact At Work", image: nil)
-//        }else{
-//
-//            cell.configure(title: "The Cure For Loneliness", subtitle: "Mindvalley Mentoring Mindvalley Mentoring Mindvalley Mentoring Mindvalley Mentoring", image: nil)
-//        }
-//
-//        return cell
-        
-//        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CourseCollectionViewCell.identifier, for: indexPath) as? CourseCollectionViewCell else {
-//            return UICollectionViewCell()
-//        }
-//        if indexPath.row == 1{
-//            
-//            cell.configure(title: "The Art Of Conciouse Parenting", image: nil)
-//        }else{
-//            
-//            cell.configure(title: "The Art Of Conciouse Parenting The Art Of Conciouse Parenting The Art Of Conciouse Parenting The Art Of Conciouse Parenting", image: nil)
-//        }
-//        
-//        return cell
-        
-//        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SeriesCollectionViewCell.identifier, for: indexPath) as? SeriesCollectionViewCell else {
-//            return UICollectionViewCell()
-//        }
-//        if indexPath.row == 1{
-//            
-//            cell.configure(title: "A-Fest Sardinia 2018", image: nil)
-//        }else{
-//            
-//            cell.configure(title: "A-Fest Sardinia 2018 A-Fest Sardinia 2018 A-Fest Sardinia 2018 A-Fest Sardinia 2018 A-Fest Sardinia 2018", image: nil)
-//        }
-//        
-//        return cell
-        
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCollectionViewCell.identifier, for: indexPath) as? CategoryCollectionViewCell else {
-            return UICollectionViewCell()
-        }
-        if indexPath.row == 1{
+            let item = viewModel.sectionData?[indexPath.section].items[indexPath.item]
             
-            cell.configure(title: "Love Relationship")
-        }else{
-            
-            cell.configure(title: "Emotional")
+            switch item {
+            case .newEpisode(let media):
+                guard let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: NewEpisodeCollectionViewCell.identifier,
+                    for: indexPath
+                ) as? NewEpisodeCollectionViewCell else {
+                    return UICollectionViewCell()
+                }
+                cell.configure(with: media)
+                return cell
+                
+            case .course(let course):
+                guard let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: CourseCollectionViewCell.identifier,
+                    for: indexPath
+                ) as? CourseCollectionViewCell else {
+                    return UICollectionViewCell()
+                }
+//                cell.configure(title: course.title, image: course.image)
+                return cell
+                
+            case .series(let series):
+                guard let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: SeriesCollectionViewCell.identifier,
+                    for: indexPath
+                ) as? SeriesCollectionViewCell else {
+                    return UICollectionViewCell()
+                }
+//                cell.configure(title: series.title, image: series.image)
+                return cell
+                
+            case .category(let category):
+                guard let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: CategoryCollectionViewCell.identifier,
+                    for: indexPath
+                ) as? CategoryCollectionViewCell else {
+                    return UICollectionViewCell()
+                }
+//                cell.configure(title: category.title)
+                return cell
+            case .none:
+                return UICollectionViewCell()
+            }
         }
         
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        if kind == UICollectionView.elementKindSectionHeader {
+        func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+            let section = viewModel.sectionData?[indexPath.section]
             
-            guard let headerView = collectionView.dequeueReusableSupplementaryView(
-                ofKind: kind,
-                withReuseIdentifier: TextSectionHeaderView.identifier,
-                for: indexPath
-            ) as? TextSectionHeaderView else {
-                return UICollectionReusableView()
+            if kind == UICollectionView.elementKindSectionHeader {
+                switch section?.type {
+                case .courses, .series:
+                    guard let headerView = collectionView.dequeueReusableSupplementaryView(
+                        ofKind: kind,
+                        withReuseIdentifier: CourseSectionHeaderView.identifier,
+                        for: indexPath
+                    ) as? CourseSectionHeaderView else {
+                        return UICollectionReusableView()
+                    }
+//                    headerView.configure(title: section.type.title, subtitle: "78 episodes", image: nil)
+                    return headerView
+                case .newEpisodes:
+                    guard let headerView = collectionView.dequeueReusableSupplementaryView(
+                        ofKind: kind,
+                        withReuseIdentifier: TextSectionHeaderView.identifier,
+                        for: indexPath
+                    ) as? TextSectionHeaderView else {
+                        return UICollectionReusableView()
+                    }
+                    headerView.configure(title: "New Episodes")
+                    return headerView
+                default:
+                    guard let headerView = collectionView.dequeueReusableSupplementaryView(
+                        ofKind: kind,
+                        withReuseIdentifier: TextSectionHeaderView.identifier,
+                        for: indexPath
+                    ) as? TextSectionHeaderView else {
+                        return UICollectionReusableView()
+                    }
+//                    headerView.configure(title: section.type.title)
+                    return headerView
+                }
+            } else if kind == UICollectionView.elementKindSectionFooter {
+                guard let footerView = collectionView.dequeueReusableSupplementaryView(
+                    ofKind: kind,
+                    withReuseIdentifier: ChannelSectionFooterLineView.identifier,
+                    for: indexPath
+                ) as? ChannelSectionFooterLineView else {
+                    return UICollectionReusableView()
+                }
+                
+                if let sectionDataCount = viewModel.sectionData?.count, sectionDataCount > 0{
+                    footerView.isHidden = indexPath.section == sectionDataCount - 1
+                }
+                
+                
+                return footerView
             }
-
-            headerView.configure(with: "Browse by categories")
-            return headerView
             
-//            guard let headerView = collectionView.dequeueReusableSupplementaryView(
-//                ofKind: kind,
-//                withReuseIdentifier: CourseSectionHeaderView.identifier,
-//                for: indexPath
-//            ) as? CourseSectionHeaderView else {
-//                return UICollectionReusableView()
-//            }
-//            
-//            headerView.configure(title: "Mindvalley Mentoring", subtitle: "78 episodes", image: nil)
-//            return headerView
-            
-        }else if kind == UICollectionView.elementKindSectionFooter {
-            guard let footerView = collectionView.dequeueReusableSupplementaryView( ofKind: kind, withReuseIdentifier: ChannelSectionFooterLineView.identifier, for: indexPath
-            ) as? ChannelSectionFooterLineView else {
-                return UICollectionReusableView()
-            }
-                        
-            // Don't show footer line for the last section
-            if indexPath.section == numberOfSections(in: collectionView) - 1 {
-                footerView.isHidden = true
-            } else {
-                footerView.isHidden = false
-            }
-            
-            return footerView
+            return UICollectionReusableView()
         }
-
-        return UICollectionReusableView()
-    }
 }

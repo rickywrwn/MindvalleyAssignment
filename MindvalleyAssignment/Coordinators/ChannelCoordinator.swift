@@ -11,9 +11,11 @@ class ChannelCoordinator: Coordinator {
     var navigationController: UINavigationController
     weak var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
+    private let container: DIContainer
     
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, container: DIContainer) {
         self.navigationController = navigationController
+        self.container = container
         setupNavigationBar()
     }
     
@@ -22,7 +24,10 @@ class ChannelCoordinator: Coordinator {
     }
     
     private func showChannel() {
-        let viewController = ChannelViewController()
+        let newEpisodeUseCase = container.newEpisodeUseCase
+        let viewModel = ChannelViewModel(newEpisodeUseCase: newEpisodeUseCase)
+        
+        let viewController = ChannelViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: false)
     }

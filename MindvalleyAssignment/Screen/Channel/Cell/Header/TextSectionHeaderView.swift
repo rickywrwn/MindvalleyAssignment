@@ -37,7 +37,7 @@ class TextSectionHeaderView: UICollectionReusableView {
         ])
     }
     
-    func configure(with title: String) {
+    func configure(title: String) {
         titleLabel.text = title
     }
 }

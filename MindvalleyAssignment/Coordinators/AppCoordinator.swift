@@ -26,9 +26,11 @@ class AppCoordinator: Coordinator {
     var navigationController: UINavigationController
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
+    private var container: DIContainer
     
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, container: DIContainer) {
         self.navigationController = navigationController
+        self.container = container
     }
     
     func start() {
@@ -36,7 +38,7 @@ class AppCoordinator: Coordinator {
     }
     
     private func showChannel() {
-        let channelCoordinator = ChannelCoordinator(navigationController: navigationController)
+        let channelCoordinator = ChannelCoordinator(navigationController: navigationController, container: container)
         channelCoordinator.parentCoordinator = self
         childCoordinators.append(channelCoordinator)
         channelCoordinator.start()

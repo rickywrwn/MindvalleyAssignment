@@ -8,12 +8,16 @@
 import Foundation
 
 struct MediaData: Codable {
-    let media: [Media]
+    let media: [Media]?
 }
 
 struct Media: Codable {
-    let type: String
-    let title: String
-    let coverAsset: CoverAsset
-    let channel: Channel
+    let type: String?
+    let title: String?
+    let coverAsset: CoverAsset?
+    let channel: Channel?
+}
+
+struct MediaChannel: Codable {
+    let title: String?
 }

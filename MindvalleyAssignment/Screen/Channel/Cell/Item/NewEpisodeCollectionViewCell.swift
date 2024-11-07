@@ -79,9 +79,9 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(title: String, subtitle: String, image: UIImage?) {
-        titleLabel.text = title
-        subtitleLabel.text = subtitle.uppercased()
+    func configure(with media: Media) {
+        titleLabel.text = media .title ?? ""
+        subtitleLabel.text = (media.channel?.title ?? "").uppercased()
         imageView.image = UIImage(named: "test_course")
     }
 }

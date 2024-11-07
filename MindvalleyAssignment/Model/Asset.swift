@@ -8,10 +8,10 @@
 import Foundation
 
 struct CoverAsset: Codable {
-    let url: String
+    let url: String?
 }
 
 struct IconAsset: Codable {
-    let url: String
+    let url: String?
     let thumbnailUrl: String?
 }

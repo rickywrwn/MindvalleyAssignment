@@ -63,9 +63,16 @@ class CourseCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(title: String, image: UIImage?) {
-        titleLabel.text = title
-        imageView.image = UIImage(named: "test_course")
+    func configure(with channel: Media) {
+        
+        titleLabel.text = channel.title ?? ""
+        
+        if let imageUrlString = channel.coverAsset?.url, let imageUrl = URL(string: imageUrlString) {
+            imageView.kf.indicatorType = .activity
+            imageView.kf.setImage(with: imageUrl, options: [.transition(.fade(0.2)), .cacheOriginalImage])
+        } else {
+            imageView.image = UIImage(named: "placeholderImage")
+        }
     }
 }
 

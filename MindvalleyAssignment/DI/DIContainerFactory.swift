@@ -10,9 +10,9 @@ import Foundation
 // MARK: - Factory Protocol
 protocol DIContainerFactory {
     func makeNetworkService() -> NetworkServiceProtocol
-//    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol
+    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol
     func makeEpisodeRepository(networkService: NetworkServiceProtocol) -> EpisodeRepositoryProtocol
-//    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol
+    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol
 }
 
 // MARK: - Production Factory
@@ -29,17 +29,17 @@ class ProductionDIFactory: DIContainerFactory {
         )
     }
     
-//    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol {
-//        return ChannelRepository(networkService: networkService)
-//    }
+    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol {
+        return ChannelRepositoryImpl(networkService: networkService)
+    }
     
     func makeEpisodeRepository(networkService: NetworkServiceProtocol) -> EpisodeRepositoryProtocol {
         return EpisodeRepositoryImpl(networkService: networkService)
     }
     
-//    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol {
-//        return CategoryRepository(networkService: networkService)
-//    }
+    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol {
+        return CategoryRepositoryImpl(networkService: networkService)
+    }
 }
 
 // MARK: - Mock Factory for Testing

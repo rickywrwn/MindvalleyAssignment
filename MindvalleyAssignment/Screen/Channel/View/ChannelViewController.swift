@@ -11,36 +11,6 @@ class ChannelViewController: UIViewController {
     weak var coordinator: ChannelCoordinator?
     private let viewModel: ChannelViewModelProtocol
     
-//    private func setupData() {
-//        let newEpisodes: [ChannelItem] = [
-//            .newEpisode(NewEpisode(title: "The Cure For Loneliness", subtitle: "Mindvalley Mentoring", image: nil)),
-//            .newEpisode(NewEpisode(title: "Evolved Enterprise", subtitle: "Impact At Work", image: nil))
-//        ]
-//        
-//        let courses: [ChannelItem] = [
-//            .course(Course(title: "The Art Of Conscious Parenting", image: nil)),
-//            .course(Course(title: "Personal Growth", image: nil))
-//        ]
-//        
-//        let series: [ChannelItem] = [
-//            .series(Series(title: "A-Fest Sardinia 2018", image: nil)),
-//            .series(Series(title: "Business Mastery", image: nil))
-//        ]
-//        
-//        let categories: [ChannelItem] = [
-//            .category(Category(title: "Love Relationship")),
-//            .category(Category(title: "Emotional"))
-//        ]
-//        
-//        sections = [
-//            ChannelSection(type: .newEpisodes, items: newEpisodes),
-//            ChannelSection(type: .courses, items: courses),
-//            ChannelSection(type: .series, items: series),
-//            ChannelSection(type: .categories, items: categories)
-//        ]
-//    }
-    
-    
     init(viewModel: ChannelViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -62,6 +32,8 @@ class ChannelViewController: UIViewController {
         // Fetch initial data
         Task {
             await viewModel.fetchNewEpisode()
+            await viewModel.fetchChannels()
+            await viewModel.fetchCategories()
         }
     }
     
@@ -75,13 +47,14 @@ class ChannelViewController: UIViewController {
             
         }
         
-        viewModel.onSectionDataChanged = { [weak self] in
+        viewModel.onChannelDataChanged = {
             
-            DispatchQueue.main.async {
-                print("masuk ")
-                self?.collectionView.reloadData()
-            }
         }
+        
+        viewModel.onSectionDataChanged = { [weak self] in
+            self?.collectionView.reloadData()
+        }
+        
     }
     
     private func handleStateChange(_ state: ViewState) {
@@ -89,22 +62,22 @@ class ChannelViewController: UIViewController {
         case .loading:
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print(state)
+            print("")
             
         case .loaded:
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print(state)
+            print("")
             
         case .error(let error):
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print(state)
+            print("")
             
         case .idle:
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print(state)
+            print("")
         }
     }
     
@@ -130,7 +103,7 @@ class ChannelViewController: UIViewController {
     private func createCollectionViewLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
             
-            let sectionType = SectionType(rawValue: sectionIndex) ?? .newEpisodes
+            let sectionType = self?.viewModel.sectionData?[sectionIndex].type
             switch sectionType {
             case .newEpisodes:
                 return self?.createNewEpisodeSection()
@@ -140,7 +113,10 @@ class ChannelViewController: UIViewController {
                 return self?.createSeriesSection()
             case .categories:
                 return self?.createCategorySection()
+            case .none:
+                return self?.createNewEpisodeSection()
             }
+            
         }
         return layout
     }
@@ -199,7 +175,7 @@ class ChannelViewController: UIViewController {
         // Item
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(250)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
@@ -207,7 +183,7 @@ class ChannelViewController: UIViewController {
         // Group
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.4),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(250)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
@@ -249,7 +225,7 @@ class ChannelViewController: UIViewController {
         // Item
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(250)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
@@ -257,7 +233,7 @@ class ChannelViewController: UIViewController {
         // Group
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.85),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(250)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
@@ -344,7 +320,6 @@ class ChannelViewController: UIViewController {
         return section
     }
 
-    
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -378,7 +353,14 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        let sectionDataCount = viewModel.sectionData?.count ?? 1
+        
+        if section != 0 && section != sectionDataCount - 1 {
+            return min(viewModel.sectionData?[section].items.count ?? 0, 6)
+        }
         return viewModel.sectionData?[section].items.count ?? 0
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -402,7 +384,7 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
                 ) as? CourseCollectionViewCell else {
                     return UICollectionViewCell()
                 }
-//                cell.configure(title: course.title, image: course.image)
+                cell.configure(with: course)
                 return cell
                 
             case .series(let series):
@@ -412,7 +394,7 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
                 ) as? SeriesCollectionViewCell else {
                     return UICollectionViewCell()
                 }
-//                cell.configure(title: series.title, image: series.image)
+                cell.configure(with: series)
                 return cell
                 
             case .category(let category):
@@ -422,7 +404,7 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
                 ) as? CategoryCollectionViewCell else {
                     return UICollectionViewCell()
                 }
-//                cell.configure(title: category.title)
+                cell.configure(with: category)
                 return cell
             case .none:
                 return UICollectionViewCell()
@@ -442,7 +424,7 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
                     ) as? CourseSectionHeaderView else {
                         return UICollectionReusableView()
                     }
-//                    headerView.configure(title: section.type.title, subtitle: "78 episodes", image: nil)
+                    headerView.configure(title: section?.title ?? "", subtitle: section?.subtitle ?? "", imageUrlString: section?.iconUrl ?? "")
                     return headerView
                 case .newEpisodes:
                     guard let headerView = collectionView.dequeueReusableSupplementaryView(
@@ -452,7 +434,7 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
                     ) as? TextSectionHeaderView else {
                         return UICollectionReusableView()
                     }
-                    headerView.configure(title: "New Episodes")
+                    headerView.configure(title: section?.title ?? "")
                     return headerView
                 default:
                     guard let headerView = collectionView.dequeueReusableSupplementaryView(
@@ -484,4 +466,8 @@ extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDel
             
             return UICollectionReusableView()
         }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+    }
 }

@@ -47,8 +47,8 @@ class CategoryCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(title: String) {
-        titleLabel.text = title
+    func configure(with category: Category) {
+        titleLabel.text = category.name
     }
 }
 

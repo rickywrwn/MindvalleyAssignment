@@ -11,13 +11,13 @@ final class DIContainer {
     private let factory: DIContainerFactory
     
     let networkService: NetworkServiceProtocol
-//    let channelRepository: ChannelRepositoryProtocol
+    let channelRepository: ChannelRepositoryProtocol
     let episodeRepository: EpisodeRepositoryProtocol
-//    let categoryRepository: CategoryRepositoryProtocol
+    let categoryRepository: CategoryRepositoryProtocol
     
-//    let channelUseCase: ChannelUseCaseProtocol
+    let channelUseCase: ChannelUseCaseProtocol
     let newEpisodeUseCase: NewEpisodeUseCaseProtocol
-//    let categoryUseCase: CategoryUseCaseProtocol
+    let categoryUseCase: CategoryUseCaseProtocol
     
     init(factory: DIContainerFactory) {
         self.factory = factory
@@ -26,15 +26,15 @@ final class DIContainer {
         self.networkService = factory.makeNetworkService()
         
         // Initialize repositories
-//        self.channelRepository = factory.makeChannelRepository(networkService: networkService)
+        self.channelRepository = factory.makeChannelRepository(networkService: networkService)
         self.episodeRepository = factory.makeEpisodeRepository(networkService: networkService)
-//        self.categoryRepository = factory.makeCategoryRepository(networkService: networkService)
+        self.categoryRepository = factory.makeCategoryRepository(networkService: networkService)
         
         // Initialize use cases
-//        self.channelUseCase = ChannelUseCase(repository: channelRepository)
+        self.channelUseCase = ChannelUseCaseImpl(repository: channelRepository)
         self.newEpisodeUseCase = NewEpisodeUseCaseImpl(
             repository: episodeRepository
         )
-//        self.categoryUseCase = CategoryUseCase(repository: categoryRepository)
+        self.categoryUseCase = CategoryUseCaseImpl(repository: categoryRepository)
     }
 }

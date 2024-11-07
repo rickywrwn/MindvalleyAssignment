@@ -25,7 +25,10 @@ class ChannelCoordinator: Coordinator {
     
     private func showChannel() {
         let newEpisodeUseCase = container.newEpisodeUseCase
-        let viewModel = ChannelViewModel(newEpisodeUseCase: newEpisodeUseCase)
+        let channelUseCase = container.channelUseCase
+        let categoryUseCase = container.categoryUseCase
+        
+        let viewModel = ChannelViewModel(newEpisodeUseCase: newEpisodeUseCase, channelUseCase: channelUseCase, categoryUseCase: categoryUseCase)
         
         let viewController = ChannelViewController(viewModel: viewModel)
         viewController.coordinator = self

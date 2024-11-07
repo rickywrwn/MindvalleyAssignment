@@ -30,6 +30,9 @@ class NewEpisodeUseCaseImpl: NewEpisodeUseCaseProtocol {
         // Create ChannelSectionData with type .newEpisodes
         return [ChannelSectionData(
             type: .newEpisodes,
+            title: "New Episodes",
+            subtitle: "",
+            iconUrl: "",
             items: channelItems
         )]
     

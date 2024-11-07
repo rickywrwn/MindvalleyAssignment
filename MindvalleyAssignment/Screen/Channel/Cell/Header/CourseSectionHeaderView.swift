@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class CourseSectionHeaderView: UICollectionReusableView {
     static let identifier = "CourseSectionHeaderView"
@@ -65,10 +66,32 @@ class CourseSectionHeaderView: UICollectionReusableView {
         ])
     }
     
-    func configure(title: String, subtitle: String, image: UIImage?) {
+    func configure(title: String, subtitle: String, imageUrlString: String) {
         titleLabel.text = title
         subtitleLabel.text = subtitle
-        imageView.image = UIImage(named: "test_header")
+        
+        if let imageUrl = URL(string: imageUrlString) {
+            imageView.kf.indicatorType = .activity
+            imageView.kf.setImage(
+                with: imageUrl,
+                placeholder: UIImage(named: "placeholderImage"),
+                options: [
+                    .transition(.fade(0.2)),
+                    .cacheOriginalImage
+                ],
+                completionHandler: { result in
+                    switch result {
+                    case .success(_):
+                        break
+                    case .failure(_):
+                        // In case of any error (including 404), show placeholder
+                        self.imageView.image = UIImage(named: "placeholderImage")
+                    }
+                }
+            )
+        } else {
+            imageView.image = UIImage(named: "placeholderImage")
+        }
     }
 }
 

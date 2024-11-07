@@ -8,9 +8,9 @@
 import Foundation
 
 struct CategoriesData: Codable {
-    let categories: [Category]
+    let categories: [Category]?
 }
 
 struct Category: Codable {
-    let name: String
+    let name: String?
 }

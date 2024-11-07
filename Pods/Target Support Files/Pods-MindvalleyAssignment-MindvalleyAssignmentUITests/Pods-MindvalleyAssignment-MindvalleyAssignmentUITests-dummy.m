@@ -1,0 +1,5 @@
+#import <Foundation/Foundation.h>
+@interface PodsDummy_Pods_MindvalleyAssignment_MindvalleyAssignmentUITests : NSObject
+@end
+@implementation PodsDummy_Pods_MindvalleyAssignment_MindvalleyAssignmentUITests
+@end

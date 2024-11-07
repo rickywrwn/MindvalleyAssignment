@@ -1,0 +1,6 @@
+framework module Pods_MindvalleyAssignmentTests {
+  umbrella header "Pods-MindvalleyAssignmentTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

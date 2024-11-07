@@ -5,6 +5,9 @@ target 'MindvalleyAssignment' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
+
+  pod 'Kingfisher', '~> 8.0'
+
   # Pods for MindvalleyAssignment
 
   target 'MindvalleyAssignmentTests' do

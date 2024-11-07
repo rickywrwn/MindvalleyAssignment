@@ -12,25 +12,19 @@ enum SectionType: Int {
     case courses
     case series
     case categories
-    
-    var title: String {
-        switch self {
-        case .newEpisodes: return "New Episodes"
-        case .courses: return ""
-        case .series: return ""
-        case .categories: return "Browse by categories"
-        }
-    }
 }
 
 enum ChannelItem {
     case newEpisode(Media)
-    case course(Channel)
-    case series(Channel)
+    case course(Media)
+    case series(Media)
     case category(Category)
 }
 
 struct ChannelSectionData {
     let type: SectionType
+    let title: String
+    let subtitle: String //for course & series header
+    let iconUrl: String //for course & series header
     let items: [ChannelItem]
 }

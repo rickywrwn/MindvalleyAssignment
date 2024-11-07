@@ -82,6 +82,12 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
     func configure(with media: Media) {
         titleLabel.text = media .title ?? ""
         subtitleLabel.text = (media.channel?.title ?? "").uppercased()
-        imageView.image = UIImage(named: "test_course")
+        
+        if let imageUrlString = media.coverAsset?.url, let imageUrl = URL(string: imageUrlString) {
+            imageView.kf.indicatorType = .activity
+            imageView.kf.setImage(with: imageUrl, options: [.transition(.fade(0.2)), .cacheOriginalImage])
+        } else {
+            imageView.image = UIImage(named: "placeholderImage")
+        }
     }
 }

@@ -80,7 +80,7 @@ class NewEpisodeCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with media: Media) {
-        titleLabel.text = media .title ?? ""
+        titleLabel.text = media .title ?? "Untitled"
         subtitleLabel.text = (media.channel?.title ?? "").uppercased()
         
         if let imageUrlString = media.coverAsset?.url, let imageUrl = URL(string: imageUrlString) {

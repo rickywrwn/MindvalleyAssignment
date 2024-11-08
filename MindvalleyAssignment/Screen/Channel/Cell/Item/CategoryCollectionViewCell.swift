@@ -48,7 +48,7 @@ class CategoryCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with category: Category) {
-        titleLabel.text = category.name
+        titleLabel.text = category.name ?? ""
     }
 }
 

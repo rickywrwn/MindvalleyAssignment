@@ -37,14 +37,14 @@ class DiskCache: CacheServiceProtocol {
     }
     
     func save<T: Encodable>(_ object: T, forKey key: String) throws {
-        print("save to cache: ", key)
+        print("saved to cache: ", key)
         let fileURL = cacheDirectory.appendingPathComponent(key)
         let data = try JSONEncoder().encode(object)
         try data.write(to: fileURL)
     }
     
     func retrieve<T: Decodable>(forKey key: String) throws -> T? {
-        print("retrieve from cache: ", key)
+        print("retrieved from cache: ", key)
         let fileURL = cacheDirectory.appendingPathComponent(key)
         guard fileManager.fileExists(atPath: fileURL.path) else { return nil }
         

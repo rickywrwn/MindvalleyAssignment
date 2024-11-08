@@ -16,8 +16,7 @@ protocol DIContainerFactory {
     func makeCategoryRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> CategoryRepositoryProtocol
 }
 
-// MARK: - Production Factory
-class ProductionDIFactory: DIContainerFactory {
+class DIFactory: DIContainerFactory {
     
     func makeNetworkService() -> NetworkServiceProtocol {
         let configuration = URLSessionConfiguration.default
@@ -45,22 +44,3 @@ class ProductionDIFactory: DIContainerFactory {
         return CategoryRepositoryImpl(networkService: networkService, cacheService: cacheService)
     }
 }
-
-// MARK: - Mock Factory for Testing
-//class MockDIFactory: DIContainerFactory {
-//    func makeNetworkService() -> NetworkServiceProtocol {
-//        return MockNetworkService()
-//    }
-//    
-//    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol {
-//        return MockChannelRepository()
-//    }
-//    
-//    func makeEpisodeRepository(networkService: NetworkServiceProtocol) -> EpisodeRepositoryProtocol {
-//        return MockEpisodeRepository()
-//    }
-//    
-//    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol {
-//        return MockCategoryRepository()
-//    }
-//}

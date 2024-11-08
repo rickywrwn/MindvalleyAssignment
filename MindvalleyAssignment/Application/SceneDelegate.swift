@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let factory = ProductionDIFactory()
+        let factory = DIFactory()
         let container = DIContainer(factory: factory)
         let navigationController = UINavigationController()
         

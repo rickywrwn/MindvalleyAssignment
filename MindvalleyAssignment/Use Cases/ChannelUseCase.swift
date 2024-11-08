@@ -51,7 +51,7 @@ class ChannelUseCaseImpl: ChannelUseCaseProtocol {
                     
                     return ChannelSectionData(
                         type: .courses,
-                        title: channel.title ?? "",
+                        title: channel.title ?? "Untitled",
                         subtitle: "\(String(channel.mediaCount ?? 0) ) episodes",
                         iconUrl: channel.iconAsset?.thumbnailUrl ?? channel.iconAsset?.url ?? "",
                         items: channelItems

@@ -65,7 +65,16 @@ class CourseCollectionViewCell: UICollectionViewCell {
     
     func configure(with channel: Media) {
         
-        titleLabel.text = channel.title ?? "Untitled"
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 5
+        let attributedString = NSAttributedString(
+            string: (channel.title ?? "Untitled"),
+            attributes: [
+                .paragraphStyle: paragraphStyle,
+                .font: UIFont.roboto(type: .bold, size: 17) ?? UIFont.boldSystemFont(ofSize: 17)
+            ]
+        )
+        titleLabel.attributedText = attributedString
         
         if let imageUrlString = channel.coverAsset?.url, let imageUrl = URL(string: imageUrlString) {
             imageView.kf.indicatorType = .activity

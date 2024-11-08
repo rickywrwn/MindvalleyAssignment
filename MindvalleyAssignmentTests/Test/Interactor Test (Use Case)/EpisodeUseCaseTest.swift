@@ -32,7 +32,6 @@ class EpisodeUseCaseTest: XCTestCase {
         super.tearDown()
     }
     
-    
     func testFetchEpisodesSuccess() async {
         // Given
         mockRepository.mockData = APIMockData.mockEpisodesData

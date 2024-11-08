@@ -27,6 +27,7 @@ class MockNetworkService: NetworkServiceProtocol {
         do {
             let decoder = JSONDecoder()
             let decodedData = try decoder.decode(T.self, from: data)
+            print("result in MockNetworkService ", decodedData)
             return .success(decodedData)
         } catch {
             return .failure(.decodingError)

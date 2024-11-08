@@ -71,7 +71,9 @@ final class ChannelViewModel: ChannelViewModelProtocol{
     var onSectionDataChanged: (() -> Void)?
     
     init(
-        newEpisodeUseCase: NewEpisodeUseCaseProtocol, channelUseCase: ChannelUseCaseProtocol, categoryUseCase: CategoryUseCaseProtocol
+        newEpisodeUseCase: NewEpisodeUseCaseProtocol,
+        channelUseCase: ChannelUseCaseProtocol,
+        categoryUseCase: CategoryUseCaseProtocol
     ) {
         self.newEpisodeUseCase = newEpisodeUseCase
         self.channelUseCase = channelUseCase

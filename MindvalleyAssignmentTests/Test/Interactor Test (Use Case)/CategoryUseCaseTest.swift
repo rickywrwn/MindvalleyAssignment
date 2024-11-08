@@ -32,7 +32,6 @@ class CategoryUseCaseTest: XCTestCase {
         super.tearDown()
     }
     
-    
     func testFetchCategorySuccess() async {
         // Given
         mockRepository.mockData = APIMockData.mockCategoriesData

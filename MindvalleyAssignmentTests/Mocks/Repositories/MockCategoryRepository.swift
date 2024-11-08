@@ -17,6 +17,7 @@ class MockCategoryRepositoryImpl: CategoryRepositoryProtocol {
     var mockResult: Result<[MindvalleyAssignment.Category], NetworkError>?
     
     init(networkService: MockNetworkService, cacheService: CacheServiceProtocol) {
+        print("init MockCategoryRepositoryImpl")
         self.networkService = networkService
         self.cacheService = cacheService
     }
@@ -35,6 +36,7 @@ class MockCategoryRepositoryImpl: CategoryRepositoryProtocol {
         switch result {
         case .success(let response):
             let category = response.data?.categories ?? []
+            print("result in MockCategoryRepositoryImpl ", category)
             
             // Cache the fetched data
             do {

@@ -30,11 +30,7 @@ class ChannelViewController: UIViewController {
         setupBindings()
         
         // Fetch initial data
-        Task {
-            await viewModel.fetchNewEpisode()
-            await viewModel.fetchChannels()
-            await viewModel.fetchCategories()
-        }
+        viewModel.viewDidLoad()
     }
     
     // MARK: - Private Methods
@@ -62,25 +58,24 @@ class ChannelViewController: UIViewController {
         case .loading:
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print("")
+            print(state)
             
         case .loaded:
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print("")
+            print(state)
             
         case .error(let error):
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print("")
+            print(state)
             
         case .idle:
 //            activityIndicator.startAnimating()
 //            updateButton.isEnabled = false
-            print("")
+            print(state)
         }
     }
-    
     private func setupNavigationTitle(){
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "Channels"
@@ -272,9 +267,17 @@ class ChannelViewController: UIViewController {
     }
 
     private func createCategorySection() -> NSCollectionLayoutSection {
+        
+        // Calculate item width accounting for margins and spacing
+        let screenWidth = UIScreen.main.bounds.width
+        let totalMargins: CGFloat = 40 // (leading 20 + trailing 20)
+        let interItemSpacing: CGFloat = 15
+        let availableWidth = screenWidth - totalMargins - interItemSpacing
+        let itemWidth = availableWidth / 2
+        
         // Item
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.5),
+            widthDimension: .absolute(itemWidth),
             heightDimension: .absolute(60)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)

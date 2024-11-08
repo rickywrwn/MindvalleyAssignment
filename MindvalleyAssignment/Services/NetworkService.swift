@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Network Service Protocol
 protocol NetworkServiceProtocol {
-    func request<T: Codable>(endpoint: Endpoint) async throws -> T
+    func request<T: Codable>(endpoint: Endpoint) async -> Result<T, NetworkError>
 }
 
 // MARK: - Network Service Implementation
@@ -20,45 +20,62 @@ final class NetworkService: NetworkServiceProtocol {
         self.session = session
     }
     
-    func request<T: Codable>(endpoint: Endpoint) async throws -> T {
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
-            throw NetworkError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = endpoint.method.rawValue
-        request.allHTTPHeaderFields = endpoint.headers
-        
-        if let parameters = endpoint.parameters {
-            if endpoint.method == .get {
-                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                components?.queryItems = parameters.map {
-                    URLQueryItem(name: $0.key, value: "\($0.value)")
+    func request<T: Codable>(endpoint: Endpoint) async -> Result<T, NetworkError> {
+            // Create URL
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                return .failure(.invalidURL)
+            }
+            
+            // Create request
+            var request = URLRequest(url: url)
+            request.httpMethod = endpoint.method.rawValue
+            request.allHTTPHeaderFields = endpoint.headers
+            
+            // Handle parameters
+            if let parameters = endpoint.parameters {
+                if endpoint.method == .get {
+                    var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    components?.queryItems = parameters.map {
+                        URLQueryItem(name: $0.key, value: "\($0.value)")
+                    }
+                    guard let url = components?.url else {
+                        return .failure(.invalidURL)
+                    }
+                    request.url = url
+                } else {
+                    do {
+                        request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+                    } catch {
+                        return .failure(.encodingError)
+                    }
                 }
-                guard let url = components?.url else {
-                    throw NetworkError.invalidURL
+            }
+            
+            do {
+                let (data, response) = try await session.data(for: request)
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    return .failure(.serverError(0))
                 }
-                request.url = url
-            } else {
-                request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+                
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    return .failure(.serverError(httpResponse.statusCode))
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let decodedData = try decoder.decode(T.self, from: data)
+                    return .success(decodedData)
+                } catch {
+                    return .failure(.decodingError)
+                }
+            } catch {
+                if (error as NSError).code == NSURLErrorNotConnectedToInternet {
+                    return .failure(.noConnection)
+                } else if (error as NSError).code == NSURLErrorTimedOut {
+                    return .failure(.timeout)
+                }
+                return .failure(.custom(error.localizedDescription))
             }
         }
-        
-        let (data, response) = try await session.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NetworkError.serverError(0)
-        }
-        
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw NetworkError.serverError(httpResponse.statusCode)
-        }
-        
-        do {
-            let decoder = JSONDecoder()
-            return try decoder.decode(T.self, from: data)
-        } catch {
-            throw NetworkError.decodingError
-        }
-    }
 }

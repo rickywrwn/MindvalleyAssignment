@@ -11,6 +11,7 @@ final class DIContainer {
     private let factory: DIContainerFactory
     
     let networkService: NetworkServiceProtocol
+    let cacheService: CacheServiceProtocol
     let channelRepository: ChannelRepositoryProtocol
     let episodeRepository: EpisodeRepositoryProtocol
     let categoryRepository: CategoryRepositoryProtocol
@@ -24,11 +25,12 @@ final class DIContainer {
         
         // Initialize services with explicit dependencies
         self.networkService = factory.makeNetworkService()
+        self.cacheService = factory.makeCacheService()
         
         // Initialize repositories
-        self.channelRepository = factory.makeChannelRepository(networkService: networkService)
-        self.episodeRepository = factory.makeEpisodeRepository(networkService: networkService)
-        self.categoryRepository = factory.makeCategoryRepository(networkService: networkService)
+        self.channelRepository = factory.makeChannelRepository(networkService: networkService, cacheService: cacheService)
+        self.episodeRepository = factory.makeEpisodeRepository(networkService: networkService, cacheService: cacheService)
+        self.categoryRepository = factory.makeCategoryRepository(networkService: networkService, cacheService: cacheService)
         
         // Initialize use cases
         self.channelUseCase = ChannelUseCaseImpl(repository: channelRepository)

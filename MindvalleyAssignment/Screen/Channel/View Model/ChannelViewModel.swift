@@ -21,6 +21,7 @@ protocol ChannelViewModelProtocol: AnyObject {
     var onCategoryDataChanged: (() -> Void)? { get set }
     var onSectionDataChanged: (() -> Void)? { get set }
     
+    func viewDidLoad()
     func fetchNewEpisode() async
     func fetchChannels() async
     func fetchCategories() async
@@ -69,7 +70,6 @@ final class ChannelViewModel: ChannelViewModelProtocol{
     var onCategoryDataChanged: (() -> Void)?
     var onSectionDataChanged: (() -> Void)?
     
-    // MARK: - Initialization
     init(
         newEpisodeUseCase: NewEpisodeUseCaseProtocol, channelUseCase: ChannelUseCaseProtocol, categoryUseCase: CategoryUseCaseProtocol
     ) {
@@ -78,31 +78,37 @@ final class ChannelViewModel: ChannelViewModelProtocol{
         self.categoryUseCase = categoryUseCase
     }
     
+    func viewDidLoad() {
+        Task {
+            await self.fetchNewEpisode()
+            await self.fetchChannels()
+            await self.fetchCategories()
+        }
+    }
+    
+    private func redorderSectionData() {
+        guard let sections = sectionData else { return }
+        let episodeSections = sections.filter { $0.type == .newEpisodes }
+        let channelSections = sections.filter { $0.type != .newEpisodes &&  $0.type != .categories}
+        let categorySections = sections.filter { $0.type == .categories }
+        
+        sectionData = episodeSections + channelSections + categorySections
+    }
+    
     @MainActor
     func fetchNewEpisode() async {
         state = .loading
         
-        do {
-            let episode = try await newEpisodeUseCase.execute()
+        let result = await newEpisodeUseCase.execute()
+        
+        switch result {
+        case .success(let episode):
             episodeData = episode
-            
-            // Update section data while maintaining order
-            if var currentSections = sectionData {
-                // Remove existing new episodes section if any
-                currentSections.removeAll { section in
-                    section.type == .newEpisodes
-                }
-                
-                // Insert new episodes at the beginning
-                currentSections.insert(contentsOf: episode, at: 0)
-                sectionData = currentSections
-            } else {
-                // Initialize with episode data
-                sectionData = episode
-            }
-            
+            sectionData = (sectionData ?? []) + episode
+            redorderSectionData()
             state = .loaded
-        } catch {
+            
+        case .failure(let error):
             state = .error(error)
         }
     }
@@ -111,14 +117,16 @@ final class ChannelViewModel: ChannelViewModelProtocol{
     func fetchChannels() async {
         state = .loading
         
-        do {
-            let channels = try await channelUseCase.execute()
+        let result = await channelUseCase.execute()
+        
+        switch result {
+        case .success(let channels):
             channelData = channels
-            
             sectionData = (sectionData ?? []) + channels
-            
+            redorderSectionData()
             state = .loaded
-        } catch {
+            
+        case .failure(let error):
             state = .error(error)
         }
     }
@@ -127,14 +135,16 @@ final class ChannelViewModel: ChannelViewModelProtocol{
     func fetchCategories() async {
         state = .loading
         
-        do {
-            let categories = try await categoryUseCase.execute()
+        let result = await categoryUseCase.execute()
+        
+        switch result {
+        case .success(let categories):
             categoryData = categories
-            
             sectionData = (sectionData ?? []) + categories
-            
+            redorderSectionData()
             state = .loaded
-        } catch {
+            
+        case .failure(let error):
             state = .error(error)
         }
     }

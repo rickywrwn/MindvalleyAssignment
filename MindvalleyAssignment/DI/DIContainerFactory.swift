@@ -10,14 +10,14 @@ import Foundation
 // MARK: - Factory Protocol
 protocol DIContainerFactory {
     func makeNetworkService() -> NetworkServiceProtocol
-    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol
-    func makeEpisodeRepository(networkService: NetworkServiceProtocol) -> EpisodeRepositoryProtocol
-    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol
+    func makeCacheService() -> CacheServiceProtocol
+    func makeChannelRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> ChannelRepositoryProtocol
+    func makeEpisodeRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> EpisodeRepositoryProtocol
+    func makeCategoryRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> CategoryRepositoryProtocol
 }
 
 // MARK: - Production Factory
 class ProductionDIFactory: DIContainerFactory {
-    
     
     func makeNetworkService() -> NetworkServiceProtocol {
         let configuration = URLSessionConfiguration.default
@@ -29,16 +29,20 @@ class ProductionDIFactory: DIContainerFactory {
         )
     }
     
-    func makeChannelRepository(networkService: NetworkServiceProtocol) -> ChannelRepositoryProtocol {
-        return ChannelRepositoryImpl(networkService: networkService)
+    func makeCacheService() -> CacheServiceProtocol {
+        return try! DiskCache()
     }
     
-    func makeEpisodeRepository(networkService: NetworkServiceProtocol) -> EpisodeRepositoryProtocol {
-        return EpisodeRepositoryImpl(networkService: networkService)
+    func makeChannelRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> ChannelRepositoryProtocol {
+        return ChannelRepositoryImpl(networkService: networkService, cacheService: cacheService)
     }
     
-    func makeCategoryRepository(networkService: NetworkServiceProtocol) -> CategoryRepositoryProtocol {
-        return CategoryRepositoryImpl(networkService: networkService)
+    func makeEpisodeRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> EpisodeRepositoryProtocol {
+        return EpisodeRepositoryImpl(networkService: networkService, cacheService: cacheService)
+    }
+    
+    func makeCategoryRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> CategoryRepositoryProtocol {
+        return CategoryRepositoryImpl(networkService: networkService, cacheService: cacheService)
     }
 }
 

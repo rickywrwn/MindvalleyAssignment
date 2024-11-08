@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Use Case Protocols
 protocol NewEpisodeUseCaseProtocol {
-    func execute() async throws -> [ChannelSectionData]
+    func execute() async -> Result<[ChannelSectionData], NetworkError>
 }
 
 class NewEpisodeUseCaseImpl: NewEpisodeUseCaseProtocol {
@@ -19,22 +19,29 @@ class NewEpisodeUseCaseImpl: NewEpisodeUseCaseProtocol {
         self.repository = repository
     }
     
-    func execute() async throws -> [ChannelSectionData] {
-        let episodeData = try await repository.fetchNewEpisode()
+    func execute() async -> Result<[ChannelSectionData], NetworkError> {
+        let result = await repository.fetchNewEpisode()
         
-        // Transform each Media object into ChannelItem.newEpisode
-        let channelItems = episodeData.map { media in
-            ChannelItem.newEpisode(media)
+        switch result {
+        case .success(let episodeData):
+            // Transform each Media object into ChannelItem.newEpisode
+            let channelItems = episodeData.map { media in
+                ChannelItem.newEpisode(media)
+            }
+            
+            // Create ChannelSectionData with type .newEpisodes
+            let sectionData = [ChannelSectionData(
+                type: .newEpisodes,
+                title: "New Episodes",
+                subtitle: "",
+                iconUrl: "",
+                items: channelItems
+            )]
+            
+            return .success(sectionData)
+            
+        case .failure(let error):
+            return .failure(error)
         }
-        
-        // Create ChannelSectionData with type .newEpisodes
-        return [ChannelSectionData(
-            type: .newEpisodes,
-            title: "New Episodes",
-            subtitle: "",
-            iconUrl: "",
-            items: channelItems
-        )]
-    
     }
 }

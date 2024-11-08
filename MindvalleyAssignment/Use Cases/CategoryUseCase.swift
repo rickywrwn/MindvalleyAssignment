@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Use Case Protocols
 protocol CategoryUseCaseProtocol {
-    func execute() async throws -> [ChannelSectionData]
+    func execute() async -> Result<[ChannelSectionData], NetworkError>
 }
 
 class CategoryUseCaseImpl: CategoryUseCaseProtocol {
@@ -19,22 +19,29 @@ class CategoryUseCaseImpl: CategoryUseCaseProtocol {
         self.repository = repository
     }
     
-    func execute() async throws -> [ChannelSectionData] {
-        let episodeData = try await repository.fetchCategories()
+    func execute() async -> Result<[ChannelSectionData], NetworkError> {
+        let result = await repository.fetchCategories()
         
-        // Transform each Media object into ChannelItem.newEpisode
-        let channelItems = episodeData.map { category in
-            ChannelItem.category(category)
+        switch result {
+        case .success(let categoryData):
+            // Transform each Media object into ChannelItem.newEpisode
+            let channelItems = categoryData.map { category in
+                ChannelItem.category(category)
+            }
+            
+            // Create ChannelSectionData with type .newEpisodes
+            let sectionData = [ChannelSectionData(
+                type: .categories,
+                title: "Browse by categories",
+                subtitle: "",
+                iconUrl: "",
+                items: channelItems
+            )]
+            
+            return .success(sectionData)
+            
+        case .failure(let error):
+            return .failure(error)
         }
-        
-        // Create ChannelSectionData with type .newEpisodes
-        return [ChannelSectionData(
-            type: .categories,
-            title: "Browse by categories",
-            subtitle: "",
-            iconUrl: "",
-            items: channelItems
-        )]
-        
     }
 }

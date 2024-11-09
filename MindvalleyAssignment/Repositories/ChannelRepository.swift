@@ -42,9 +42,15 @@ class ChannelRepositoryImpl: ChannelRepositoryProtocol {
             return .success(channel)
             
         case .failure(let error):
-//             Try to retrieve cached data if network request fails
-            if let cachedChannel: [Channel] = try? cacheService.retrieve(forKey: cacheKey) {
-                return .success(cachedChannel)
+            
+            switch error{
+            case .noConnection, .timeout:
+                // Try to retrieve cached data if network request fails
+                if let cachedChannel: [Channel] = try? cacheService.retrieve(forKey: cacheKey) {
+                    return .success(cachedChannel)
+                }
+            default:
+                return .failure(error)
             }
             return .failure(error)
         }

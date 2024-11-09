@@ -33,6 +33,10 @@ final class ChannelViewModel: ChannelViewModelProtocol{
     private let channelUseCase: ChannelUseCaseProtocol
     private let categoryUseCase: CategoryUseCaseProtocol
     
+    private var completedFetchCount = 0
+    private var totalFetchCount = 3 // episodes, channels, categories
+    private var firstError: Error?
+    
     private(set) var state: ViewState = .idle {
         didSet {
             onStateChanged?(state)
@@ -81,10 +85,15 @@ final class ChannelViewModel: ChannelViewModelProtocol{
     }
     
     func viewDidLoad() {
+        state = .loading
+        completedFetchCount = 0
+        firstError = nil
+        
         Task {
-            await self.fetchNewEpisode()
-            await self.fetchChannels()
-            await self.fetchCategories()
+            async let episodeResult = fetchNewEpisode()
+            async let channelsResult = fetchChannels()
+            async let categoriesResult = fetchCategories()
+            _ = await [episodeResult, channelsResult, categoriesResult]
         }
     }
     
@@ -97,10 +106,24 @@ final class ChannelViewModel: ChannelViewModelProtocol{
         sectionData = episodeSections + channelSections + categorySections
     }
     
+    private func markFetchComplete(error: Error? = nil) {
+        completedFetchCount += 1
+        
+        if let error = error, firstError == nil {
+            firstError = error
+        }
+        
+        if completedFetchCount == totalFetchCount {
+            if let error = firstError {
+                state = .error(error)
+            } else {
+                state = .loaded
+            }
+        }
+    }
+    
     @MainActor
     func fetchNewEpisode() async {
-        state = .loading
-        
         let result = await newEpisodeUseCase.execute()
         
         switch result {
@@ -108,34 +131,33 @@ final class ChannelViewModel: ChannelViewModelProtocol{
             episodeData = episode
             sectionData = (sectionData ?? []) + episode
             redorderSectionData()
-            state = .loaded
+            markFetchComplete()
             
         case .failure(let error):
-            state = .error(error)
+            markFetchComplete(error: error)
         }
     }
     
     @MainActor
     func fetchChannels() async {
-        state = .loading
         
         let result = await channelUseCase.execute()
+        
         
         switch result {
         case .success(let channels):
             channelData = channels
             sectionData = (sectionData ?? []) + channels
             redorderSectionData()
-            state = .loaded
+            markFetchComplete()
             
         case .failure(let error):
-            state = .error(error)
+            markFetchComplete(error: error)
         }
     }
     
     @MainActor
     func fetchCategories() async {
-        state = .loading
         
         let result = await categoryUseCase.execute()
         
@@ -144,10 +166,10 @@ final class ChannelViewModel: ChannelViewModelProtocol{
             categoryData = categories
             sectionData = (sectionData ?? []) + categories
             redorderSectionData()
-            state = .loaded
+            markFetchComplete()
             
         case .failure(let error):
-            state = .error(error)
+            markFetchComplete(error: error)
         }
     }
 }

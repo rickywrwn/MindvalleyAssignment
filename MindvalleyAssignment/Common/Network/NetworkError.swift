@@ -41,13 +41,13 @@ enum NetworkError: LocalizedError {
     private func getServerErrorMessage(for code: Int) -> String {
         switch code {
         case 400:
-            return "Bad request"
+            return "Bad request (400)"
         case 401:
-            return "Unauthorized access"
+            return "Unauthorized access (401)"
         case 403:
-            return "Access forbidden"
+            return "Access forbidden (403)"
         case 404:
-            return "Content not found"
+            return "Content not found (404)"
         case 500...599:
             return "Server error occurred"
         default:

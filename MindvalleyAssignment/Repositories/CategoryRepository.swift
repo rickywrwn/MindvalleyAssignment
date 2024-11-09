@@ -42,9 +42,15 @@ class CategoryRepositoryImpl: CategoryRepositoryProtocol {
             return .success(category)
             
         case .failure(let error):
-            // Try to retrieve cached data if network request fails
-            if let cachedCategory: [Category] = try? cacheService.retrieve(forKey: cacheKey) {
-                return .success(cachedCategory)
+            
+            switch error{
+            case .noConnection, .timeout:
+                // Try to retrieve cached data if network request fails
+                if let cachedCategory: [Category] = try? cacheService.retrieve(forKey: cacheKey) {
+                    return .success(cachedCategory)
+                }
+            default:
+                return .failure(error)
             }
             return .failure(error)
         }

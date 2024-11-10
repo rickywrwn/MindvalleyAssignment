@@ -9,6 +9,7 @@ import UIKit
 
 extension ChannelViewController {
     
+    // MARK: - Create Layout
     func createCollectionViewLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
             
@@ -40,8 +41,13 @@ extension ChannelViewController {
         item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         // Group
+        let deviceType = UIDevice.current.userInterfaceIdiom
+        let groupWidthDimension: NSCollectionLayoutDimension = deviceType == .pad ?
+            .fractionalWidth(0.25) : // iPad: 4 items per row
+            .fractionalWidth(0.4)    // iPhone: 2.5 items per row
+        
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.4),
+            widthDimension: groupWidthDimension,
             heightDimension: .estimated(250)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
@@ -90,8 +96,13 @@ extension ChannelViewController {
         item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         // Group
+        let deviceType = UIDevice.current.userInterfaceIdiom
+        let groupWidthDimension: NSCollectionLayoutDimension = deviceType == .pad ?
+            .fractionalWidth(0.25) : // iPad: 4 items per row
+            .fractionalWidth(0.4)    // iPhone: 2.5 items per row
+        
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.4),
+            widthDimension: groupWidthDimension,
             heightDimension: .estimated(250)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
@@ -140,8 +151,13 @@ extension ChannelViewController {
         item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         // Group
+        let deviceType = UIDevice.current.userInterfaceIdiom
+        let groupWidthDimension: NSCollectionLayoutDimension = deviceType == .pad ?
+            .fractionalWidth(0.4) : // iPad: 4 items per row
+            .fractionalWidth(0.85)    // iPhone: 2.5 items per row
+        
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.85),
+            widthDimension: groupWidthDimension,
             heightDimension: .estimated(250)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
@@ -239,6 +255,7 @@ extension ChannelViewController {
     
 }
 
+// MARK: - Data Source & Delegate
 extension ChannelViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {

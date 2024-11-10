@@ -16,7 +16,7 @@ struct RetryConfig {
     static let `default` = RetryConfig(
         maxAttempts: 3,
         initialDelay: 1.0,
-        maxDelay: 10.0,
+        maxDelay: 5.0,
         multiplier: 2.0
     )
 }

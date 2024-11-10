@@ -43,6 +43,7 @@ final class NetworkService: NetworkServiceProtocol {
                         // Exponential backoff
                         delay = min(delay * retryConfig.multiplier, retryConfig.maxDelay)
                         attempt += 1
+                        print("RTO, Request attempt \(attempt) with delay \(delay)")
                         continue
                     }
                 }

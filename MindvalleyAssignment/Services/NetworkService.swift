@@ -14,10 +14,10 @@ protocol NetworkServiceProtocol {
 
 // MARK: - Network Service Implementation
 final class NetworkService: NetworkServiceProtocol {
-    private let session: URLSession
+    private let session: URLSessionProtocol
     private let retryConfig: RetryConfig
     
-    init(session: URLSession = .shared, retryConfig: RetryConfig = .default) {
+    init(session: URLSessionProtocol = URLSession.shared, retryConfig: RetryConfig = .default) {
         self.session = session
         self.retryConfig = retryConfig
     }
@@ -47,10 +47,10 @@ final class NetworkService: NetworkServiceProtocol {
                         continue
                     }
                 }
-                return result
+                print("Max retry attempts exceeded")
+                return .failure(.noConnection)
             }
         }
-        print("Max retry attempts exceeded")
         return .failure(.noConnection)
     }
     

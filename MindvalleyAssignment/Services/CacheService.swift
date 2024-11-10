@@ -16,7 +16,7 @@ protocol CacheServiceProtocol {
 }
 
 // MARK: - Disk Cache Implementation
-class DiskCache: CacheServiceProtocol {
+class CacheService: CacheServiceProtocol {
     private let fileManager: FileManager
     private let cacheDirectory: URL
     

@@ -29,7 +29,7 @@ class DIFactory: DIContainerFactory {
     }
     
     func makeCacheService() -> CacheServiceProtocol {
-        return try! DiskCache()
+        return try! CacheService()
     }
     
     func makeChannelRepository(networkService: NetworkServiceProtocol, cacheService: CacheServiceProtocol) -> ChannelRepositoryProtocol {
